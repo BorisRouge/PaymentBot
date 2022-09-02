@@ -22,6 +22,7 @@ db = Database(config.database.con_data)
 p2p = QiwiP2P(auth_key=config.qiwi.qiwi_secret_key)
 
 
+# _________________________________User Handlers_________________________________
 @dp.message_handler(commands=['start'], state='*')
 async def welcome(message: types.Message, state: FSMContext):
     """Запуск диалога с ботом."""
@@ -74,15 +75,12 @@ async def confirm_amount_button(callback: types.CallbackQuery):
         "Счет на оплату для пополнения баланса.",
         reply_markup=Button().confirm_payment(bill.pay_url, bill.bill_id),
         )
-
     while True:
-        #status = p2p.check(bill.bill_id).status
-        status = 'PAID'
+        status = p2p.check(bill.bill_id).status
         if status == 'WAITING':
             await asyncio.sleep(15)
-            print(p2p.check(bill.bill_id).status)
         elif status == 'PAID':
-            db.deposit(callback.from_user.id, amount, bill.bill_id) # Добавить что-то?
+            db.deposit(callback.from_user.id, amount, bill.bill_id)
             break
         elif status == 'EXPIRED':
             await bot.send_message(callback.from_user.id,
@@ -111,10 +109,11 @@ async def check_status_button(callback: types.CallbackQuery):
             )
 
 
-# _________________________________Admin __________________________________________
+# _________________________________Admin Handlers_________________________________
 
 @dp.message_handler(user_id=config.telegram.admin, commands=["user"], state='*')
 async def get_user_info(message: types.Message, state:FSMContext):
+    """Управление пользователями."""
     await message.answer('Введите идентификатор пользователя'
                         +', чтобы изменить его баланс или заблокировать.'
                         +'\nИли выгрузите сведения о всех пользователях'
@@ -126,6 +125,7 @@ async def get_user_info(message: types.Message, state:FSMContext):
 
 @dp.message_handler(user_id=config.telegram.admin, state=StateAdmin.A1)
 async def get_user_id(message: types.Message, state:FSMContext):
+    """Получение данных о пользователях."""
     user_id = message.text
     balance = db.user_info(user_id)[1]
     if balance:
@@ -140,6 +140,7 @@ async def get_user_id(message: types.Message, state:FSMContext):
 
 @dp.callback_query_handler(text='all_users', state=StateAdmin.A1)
 async def all_users_button(callback: types.CallbackQuery):
+    """Кнопка выгрузки данных пользователей."""
     file = open('logs/users.log', 'w')
     records = Tablemaker(db.user_get_all()).make_table()
     file.write(records)
@@ -150,12 +151,14 @@ async def all_users_button(callback: types.CallbackQuery):
 
 @dp.callback_query_handler(text='change_balance', state=StateAdmin.A1)
 async def change_balance_button(callback: types.CallbackQuery):
+    """Кнопка изменения баланса."""
     await StateAdmin.A2.set()
     await bot.send_message(callback.from_user.id, 'Введите новое значение баланса.')
 
 
 @dp.callback_query_handler(text='ban_user', state=StateAdmin.A1)
 async def ban_user_button(callback: types.CallbackQuery, state:FSMContext):
+    """Блокировка пользователя."""
     await StateAdmin.A2.set()
     async with state.proxy() as data:
         user_id = data['A1']
@@ -166,6 +169,7 @@ async def ban_user_button(callback: types.CallbackQuery, state:FSMContext):
 
 @dp.message_handler(user_id=config.telegram.admin, state=StateAdmin.A2)
 async def change_user_balance(message: types.Message, state:FSMContext):
+    """Изменение баланса пользователя."""
     async with state.proxy() as data:
         user_id = data['A1']
         new_balance = message.text
@@ -174,9 +178,9 @@ async def change_user_balance(message: types.Message, state:FSMContext):
         await state.finish()
 
 
-# Выгрузка логов
 @dp.message_handler(user_id=config.telegram.admin, commands=["log"], state='*')
 async def get_user_info(message: types.Message, state:FSMContext):
+    """Выгрузка логов."""
     log = InputFile('logs/errors.log')
     await bot.send_document(message.from_id, log)
 

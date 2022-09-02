@@ -7,6 +7,7 @@ log = get_logger()
 
 
 class Database:
+    """Менеджер базы данных."""
     def __init__(self, db_conf: str):
         self.db_conf = db_conf
         self.start_up()
@@ -18,14 +19,14 @@ class Database:
         cur = con.cursor()
         try:
             cur.execute("""SELECT * FROM users""")
-            log.warning("Таблица users существует")
+            log.warning("Таблица users - OK")
         except psycopg2.Error:
             log.warning("Таблицы users не существует. Создается...")
             con.rollback()
             self.create_table_users()
         try:
             cur.execute("""SELECT * FROM ledgers""")
-            log.warning("Таблица ledgers существует")
+            log.warning("Таблица ledgers - OK")
         except psycopg2.Error:
             log.warning("Таблицы ledgers не существует. Создается...")
             con.rollback()
@@ -100,6 +101,7 @@ class Database:
         except psycopg2.DatabaseError as e:
             log.error(f'Ошибка при проведении операции пополнения: {e}')
             return False
+
 
     def user_info(self, user_id: int):
         """Проверка наличия пользователя в базе.

@@ -42,11 +42,13 @@ class Validator():
 
 
 class Tablemaker:
+    """Подготовка таблицы данных для вывода в текстовый файл."""
     def __init__(self, records):
         self.records = records
         self.make_table()
     
     def make_table (self):
+        """Метод для данных о пользователях."""
         table = '{:<15}{:<15}{:<15}'.format('ПОЛЬЗОВАТЕЛЬ', 'БАЛАНС, РУБ.', 'СТАТУС БАНА')
         for record in self.records:
             line = ''
