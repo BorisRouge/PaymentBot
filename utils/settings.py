@@ -10,14 +10,15 @@ class Database:
     con_data: str
 
 
-
 @dataclass
 class Telegram:
     telegram_bot_token: str
+    admin: str
 
 @dataclass
 class Qiwi:
     qiwi_secret_key: str
+
 
 @dataclass
 class Settings:
@@ -35,8 +36,10 @@ def get_config(path: str = None):
         database=Database(f"""dbname={env.str('DB')}
                           user={env.str('DBUSER')}
                           password={env.str('DBPASS')}""",
-        ),
-        telegram=Telegram(telegram_bot_token=env.str('TELEGRAM_BOT_TOKEN')),
+                         ),
+        telegram=Telegram(telegram_bot_token=env.str('TELEGRAM_BOT_TOKEN'),
+                          admin=env.str('TELEGRAM_ADMINS'),
+                         ),
         qiwi=Qiwi(qiwi_secret_key=env.str('QIWI_SECRET_KEY')),
 
     )

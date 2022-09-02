@@ -1,12 +1,14 @@
 import asyncio
-import logging
+
 
 from aiogram import Bot, Dispatcher, executor, types
 from pyqiwip2p import QiwiP2P
 
-from utils import settings
-from utils.buttons import Button
-from utils.validators import Validator
-from utils.db_manager import Database
+from . import settings
+from buttons import Button
+from validators import Validator
+from db_manager import Database
+from logger import get_logger
 
-logger = logging.getLogger(__name__)
+config = settings.get_config("sample.env")
+

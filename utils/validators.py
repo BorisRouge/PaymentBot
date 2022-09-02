@@ -39,3 +39,19 @@ class Validator():
             return stripped
         else:
             return False
+
+
+class Tablemaker:
+    def __init__(self, records):
+        self.records = records
+        self.make_table()
+    
+    def make_table (self):
+        table = '{:<15}{:<15}{:<15}'.format('ПОЛЬЗОВАТЕЛЬ', 'БАЛАНС, РУБ.', 'СТАТУС БАНА')
+        for record in self.records:
+            line = ''
+            for value in record:
+                line += '{:<15}'.format(value)
+            table += f'\n{line}'
+        return table
+    

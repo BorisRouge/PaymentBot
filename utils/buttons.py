@@ -3,6 +3,8 @@ from aiogram import types
 class Button:
     def __init__(self):
         self.deposit = self.set_deposit
+        self.manage_user = self.set_manage_user
+        self.all_users = self.set_all_users
         self.confirm_amount = self.set_confirm_amount
         self.confirm_payment = self.set_confirm_payment
 
@@ -23,6 +25,22 @@ class Button:
     
     
     def set_confirm_amount(self, amount:int):
-        button = types.InlineKeyboardButton(text='Верно.', callback_data=f'confirm_amount:{amount}')
+        button = types.InlineKeyboardButton(text='Верно', callback_data=f'confirm_amount:{amount}')
         menu = types.InlineKeyboardMarkup(resize_keyboard=True).insert(button)        
+        return menu
+
+    @property
+    def set_manage_user(self):
+        balance_button = types.InlineKeyboardButton(text='Изменить баланс', callback_data='change_balance')
+        ban_button = types.InlineKeyboardButton(text='Заблокировать пользователя', callback_data='ban_user')
+        menu = types.InlineKeyboardMarkup(resize_keyboard=True, row_width=1)
+        menu.insert(balance_button)
+        menu.insert(ban_button)       
+        return menu
+
+    
+    @property
+    def set_all_users(self):
+        button = types.InlineKeyboardButton(text='Выгрузить всех пользователей', callback_data='all_users')
+        menu = types.InlineKeyboardMarkup(resize_keyboard=True).insert(button)
         return menu
