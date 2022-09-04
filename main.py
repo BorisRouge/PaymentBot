@@ -29,6 +29,7 @@ async def welcome(message: types.Message, state: FSMContext):
     user_data = db.user_info(message.from_user.id)
     if user_data is False:
         db.user_create(message.from_user.id)
+        user_data = db.user_info(message.from_user.id)
     if user_data[2] is True:
         await message.answer(f"Вы заблокированы администратором.")
         return
@@ -127,15 +128,17 @@ async def get_user_info(message: types.Message, state:FSMContext):
 async def get_user_id(message: types.Message, state:FSMContext):
     """Получение данных о пользователях."""
     user_id = message.text
-    balance = db.user_info(user_id)[1]
+    balance = db.user_info(user_id)
     if balance:
-        await message.answer(f'Баланс пользователя: {balance} руб.',
+        await message.answer(f'Баланс пользователя: {balance[1]} руб.',
                              reply_markup=Button().manage_user,
                              )
         await state.update_data(A1=user_id)
     else:
         await message.answer('Пользователя с таким идентификатором нет в базе.'
-                             +'\nПопробуйте ввести другой.')
+                             +'\nПопробуйте ввести другой.'
+                             +'\nИли отмените действие.',
+                             reply_markup=Button().cancel)
 
 
 @dp.callback_query_handler(text='all_users', state=StateAdmin.A1)
@@ -183,6 +186,12 @@ async def get_user_info(message: types.Message, state:FSMContext):
     """Выгрузка логов."""
     log = InputFile('logs/errors.log')
     await bot.send_document(message.from_id, log)
+
+
+@dp.callback_query_handler(text='cancel', state='*')
+async def cancel_button(callback: types.CallbackQuery, state:FSMContext):
+    """Отмена операции."""
+    state.reset_state()
 
 
 if __name__ == '__main__':

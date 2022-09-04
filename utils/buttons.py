@@ -7,6 +7,7 @@ class Button:
         self.all_users = self.set_all_users
         self.confirm_amount = self.set_confirm_amount
         self.confirm_payment = self.set_confirm_payment
+        self.cancel = self.set_cancel
 
     @property
     def set_deposit(self):
@@ -42,5 +43,11 @@ class Button:
     @property
     def set_all_users(self):
         button = types.InlineKeyboardButton(text='Выгрузить всех пользователей', callback_data='all_users')
+        menu = types.InlineKeyboardMarkup(resize_keyboard=True).insert(button)
+        return menu
+
+    @property
+    def set_cancel(self):
+        button = types.InlineKeyboardButton(text='Отмена', callback_data='cancel')
         menu = types.InlineKeyboardMarkup(resize_keyboard=True).insert(button)
         return menu
