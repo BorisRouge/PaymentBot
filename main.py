@@ -191,7 +191,7 @@ async def get_user_info(message: types.Message, state:FSMContext):
 @dp.callback_query_handler(text='cancel', state='*')
 async def cancel_button(callback: types.CallbackQuery, state:FSMContext):
     """Отмена операции."""
-    state.reset_state()
+    await state.reset_state()
 
 
 if __name__ == '__main__':
