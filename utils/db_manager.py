@@ -122,7 +122,7 @@ class Database:
             return user_data
 
         except (psycopg2.Error, TypeError) as e:
-            log.error('При поиске в базе данных'
+            log.error('При поиске в базе данных '
                      +'не найден идентификатор пользователя.', e
                      )
             return False

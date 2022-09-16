@@ -1,5 +1,6 @@
 from aiogram import types
 
+
 class Button:
     def __init__(self):
         self.deposit = self.set_deposit
@@ -14,7 +15,6 @@ class Button:
         button = types.InlineKeyboardButton(text='Пополнить баланс', callback_data='deposit')
         menu = types.InlineKeyboardMarkup(resize_keyboard=True).insert(button)
         return menu
-
     
     def set_confirm_payment(self, url:str, bill_id:str):
         url_button = types.InlineKeyboardButton(text='Ссылка на платеж', url=url)
